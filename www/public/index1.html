@@ -1,0 +1,128 @@
+<ons-page id = "index1.html">
+
+      <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+
+          <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-messaging.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-performance.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAxcg4l4G5AZlWMT0gI8ayulKb5Ef4xaag",
+    authDomain: "messaging-45b09.firebaseapp.com",
+    databaseURL: "https://messaging-45b09.firebaseio.com",
+    projectId: "messaging-45b09",
+    storageBucket: "messaging-45b09.appspot.com",
+    messagingSenderId: "684818172856",
+    appId: "1:684818172856:web:8710d481be7377b9b19d4d",
+    measurementId: "G-X339FV4D6H"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+    <script>
+
+// Signs-in Messaging with GOOGLE POP UP
+function signIn() {
+  // Initiate Firebase Auth.
+  // Sign into Firebase using popup auth & Google as the identity provider.
+  var provider = new firebase.auth.GoogleAuthProvider();
+  //Sign in with pop up
+ firebase.auth().signInWithPopup(provider).then(function(result) {
+  // This gives you a Google Access Token. You can use it to access the Google API.
+  var token = result.credential.accessToken;
+  // The signed-in user info.
+  var user = result.user;
+  // ...
+}).catch(function(error) {
+  // Handle Errors here.
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  // The email of the user's account used.
+  var email = error.email;
+  // The firebase.auth.AuthCredential type that was used.
+  var credential = error.credential; });
+}
+
+// Signs-out of Messaging.
+function signOut() {
+  // Sign out of Firebase.
+  firebase.auth().signOut();
+}
+// Initiate Firebase Auth.
+function initFirebaseAuth() {
+  // Listen to auth state changes.
+  firebase.auth().onAuthStateChanged(authStateObserver);
+}
+// Returns the signed-in user's profile pic URL.
+function getProfilePicUrl() {
+  return firebase.auth().currentUser.photoURL || '/images/profile_placeholder.png';
+}
+// Returns the signed-in user's display name.
+function getUserName() {
+  return firebase.auth().currentUser.displayName;
+}
+// Returns true if a user is signed-in.
+function isUserSignedIn() {
+  return !!firebase.auth().currentUser;
+}
+
+function display() {
+  alert('herrrrlo')
+  outputText = document.getElementById("output")
+  outputText.innerHTML = "test writing";
+  outputText.style.color = "red";
+}
+
+</script>
+
+  <ons-toolbar>
+    <ons-back-button>Back</ons-back-button>
+</ons-toolbar>
+
+<p>
+test
+</p>
+
+  <p>
+<ons-button onClick = "signIn()">Sign In</ons-button>
+    </p>
+
+    <p>
+      <div id="output"></div>
+      </p>
+
+  <p>
+<ons-button onCLick = "display()">test button</ons-button>
+    </p> 
+
+  <p>
+<ons-button onClick = "signOut()">Sign Out</ons-button>
+    </p>
+
+<ons-bottom-toolbar modifier = "transparent">
+<textarea style = "font-size: 25px" class="textarea textarea--transparent" rows="3" placeholder="Text Message"></textarea>
+<ons-button>Send</ons-button>
+</ons-bottom-toolbar>
+
+</ons-page>
