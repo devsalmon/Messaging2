@@ -1,5 +1,5 @@
-<ons-page id = "index1.html">
-
+  <ons-page id = "index1.html">
+      
       <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
@@ -42,6 +42,16 @@
 
     <script>
 
+
+	// Returns the signed-in user's profile pic URL.
+function getProfilePicUrl() {
+  return firebase.auth().currentUser.photoURL || '/images/profile_placeholder.png';
+}
+// Returns the signed-in user's display name.
+function getUserName() {
+  return firebase.auth().currentUser.displayName;
+}
+
 // Signs-in Messaging with GOOGLE POP UP
 function signIn() {
   // Initiate Firebase Auth.
@@ -62,47 +72,115 @@ function signIn() {
   var email = error.email;
   // The firebase.auth.AuthCredential type that was used.
   var credential = error.credential; });
+
+  // Get the signed-in user's profile pic and name.
+  //var profilePicUrl = getProfilePicUrl();
+  //var userName = getUserName();
+
+  // Set the user's profile pic and name.
+  //document.getElementById('user-pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
+  //document.getElementById('user-name').textContent = userName;
+
 }
 
 // Signs-out of Messaging.
 function signOut() {
   // Sign out of Firebase.
   firebase.auth().signOut();
+  alert("YOU JUST SIGNED OUT")
 }
 // Initiate Firebase Auth.
-function initFirebaseAuth() {
+//function initFirebaseAuth() {
   // Listen to auth state changes.
-  firebase.auth().onAuthStateChanged(authStateObserver);
-}
-// Returns the signed-in user's profile pic URL.
-function getProfilePicUrl() {
-  return firebase.auth().currentUser.photoURL || '/images/profile_placeholder.png';
-}
-// Returns the signed-in user's display name.
-function getUserName() {
-  return firebase.auth().currentUser.displayName;
-}
+  //firebase.auth().onAuthStateChanged(authStateObserver);
+//}
 // Returns true if a user is signed-in.
 function isUserSignedIn() {
   return !!firebase.auth().currentUser;
 }
 
 function display() {
-  alert('herrrrlo')
+  alert(name)
   outputText = document.getElementById("output")
   outputText.innerHTML = "test writing";
   outputText.style.color = "red";
+  // Get the signed-in user's profile pic and name.
 }
+
+// Saves a new message to your Cloud Firestore database.
+function saveMessage(messageText) {
+  // Add a new message entry to the database.
+  return firebase.firestore().collection('messages').add({
+    name: getUserName(),
+    text: messageText,
+    profilePicUrl: getProfilePicUrl(),
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(error) {
+    console.error('Error writing new message to database', error);
+  });
+}
+
+// Triggers when the auth state change for instance when the user signs-in or signs-out.
+//function authStateObserver(user) {
+  //if (user) { // User is signed in!
+    // Get the signed-in user's profile pic and name.
+    //var profilePicUrl = getProfilePicUrl();
+	//alert("user is signed innnnn")
+    //var userName = firebase.auth().currentUser.displayName;
+	
+    // Set the user's profile pic and name.
+    //document.getElementById('user-pic').style.backgroundImage = 'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
+    //document.getElementById('user-name').textContent = userName;
+
+    // Show user's profile and sign-out button.
+    //userNameElement.removeAttribute('hidden');
+    //userPicElement.removeAttribute('hidden');
+    //signOutButtonElement.removeAttribute('hidden');
+
+    // Hide sign-in button.
+    //signInButtonElement.setAttribute('hidden', 'true');
+
+    // We save the Firebase Messaging Device token and enable notifications.
+    //saveMessagingDeviceToken();
+  //} //else { // User is signed out!
+    // Hide user's profile and sign-out button.
+   // userNameElement.setAttribute('hidden', 'true');
+   // userPicElement.setAttribute('hidden', 'true');
+   // signOutButtonElement.setAttribute('hidden', 'true');
+
+    // Show sign-in button.
+   // signInButtonElement.removeAttribute('hidden');
+  //}
+//}
+// Triggers when the auth state change for instance when the user signs-in or signs-out.
+firebase.auth().onAuthStateChanged(function(user) {
+
+  var user = firebase.auth().currentUser;
+  //var name;
+
+if (user != null) {
+	alert("USER IS SIGNED IN")
+  name = user.displayName;
+  document.getElementById('user-name').textContent = name;
+  email = user.email;
+}
+});
 
 </script>
 
+
+
   <ons-toolbar>
     <ons-back-button>Back</ons-back-button>
+    <div class="right">
+      <ons-toolbar-button icon="md-face"></ons-toolbar-button>
+    </div>
 </ons-toolbar>
 
 <p>
 test
 </p>
+
 
   <p>
 <ons-button onClick = "signIn()">Sign In</ons-button>
@@ -113,11 +191,16 @@ test
       </p>
 
   <p>
-<ons-button onCLick = "display()">test button</ons-button>
+<ons-button onCLick = "display();">test button</ons-button>
     </p> 
 
+	<p>
+	<div id="user-pic"></div>
+	<div id="user-name"></div>
+	</p>
+
   <p>
-<ons-button onClick = "signOut()">Sign Out</ons-button>
+<ons-button onClick = "signOut(); ">Sign Out</ons-button>
     </p>
 
 <ons-bottom-toolbar modifier = "transparent">
