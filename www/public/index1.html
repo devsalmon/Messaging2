@@ -1,5 +1,5 @@
-  <ons-page id = "index1.html">
-      
+<ons-page id = "index1.html">
+
       <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
@@ -88,6 +88,7 @@ function signOut() {
   // Sign out of Firebase.
   firebase.auth().signOut();
   alert("YOU JUST SIGNED OUT")
+  document.getElementById('user-name').textContent = "no one is signed in";
 }
 // Initiate Firebase Auth.
 //function initFirebaseAuth() {
@@ -100,23 +101,42 @@ function isUserSignedIn() {
 }
 
 function display() {
-  alert(name)
+  //alert(name)
   outputText = document.getElementById("output")
   outputText.innerHTML = "test writing";
   outputText.style.color = "red";
-  // Get the signed-in user's profile pic and name.
+}
+
+// Triggered when the send new message form is submitted.
+function onMessageFormSubmit(e) {
+  e.preventDefault();
+  // Check that the user entered a message and is signed in.
+  if (messageInputElement.value && checkSignedInWithMessage()) {
+    saveMessage(messageInputElement.value).then(function() {
+      // Clear message text field and re-enable the SEND button.
+      resetMaterialTextfield(messageInputElement);
+      //toggleButton();
+    });
+  }
 }
 
 // Saves a new message to your Cloud Firestore database.
-function saveMessage(messageText) {
+function saveMessage() {
+var messageInputElementValue = document.getElementById('message').value;
+alert("Is this even working bro?")
+alert(messageInputElementValue)
   // Add a new message entry to the database.
-  return firebase.firestore().collection('messages').add({
+  firebase.firestore().collection('messages').add({
     name: getUserName(),
-    text: messageText,
-    profilePicUrl: getProfilePicUrl(),
+    text: messageInputElementValue,
+    //profilePicUrl: getProfilePicUrl(),
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
+	}).then(function() {
+    alert("Document successfully written!")
+	resetMaterialTextfield();
   }).catch(function(error) {
-    console.error('Error writing new message to database', error);
+  alert("Error writing new message to database", error)
+    //console.error('Error writing new message to database', error);
   });
 }
 
@@ -157,18 +177,46 @@ firebase.auth().onAuthStateChanged(function(user) {
 
   var user = firebase.auth().currentUser;
   //var name;
-
-if (user != null) {
+  //if user is present (singed in), their name will display appropriately.
+  if (user != null) {
 	alert("USER IS SIGNED IN")
   name = user.displayName;
   document.getElementById('user-name').textContent = name;
+  //I could also display email and profile pic and other things later.
   email = user.email;
 }
+	else { alert("No one is signed in")}
 });
 
+// Returns true if user is signed-in. Otherwise false and displays a message.
+function checkSignedInWithMessage() {
+  // Return true if the user is signed in Firebase
+  if (isUserSignedIn()) {
+    return true;
+  }
+  else {
+  alert("User must sign in first before sending message")
+  }
+
+  // Display a message to the user using a Toast.
+  //var data = {
+    //message: 'You must sign-in first',
+    //timeout: 2000
+  //};
+  //signInSnackbarElement.MaterialSnackbar.showSnackbar(data);
+  //return false;
+}
+
+// Resets the given MaterialTextField.
+function resetMaterialTextfield() {
+  document.getElementById('message').value = '';
+  //element.parentNode.MaterialTextfield.boundUpdateClassesHandler();
+}
+
+//var messageInputElementValue = document.getElementById('message').value;
+//var myMessage = messageInputElement.value;
+
 </script>
-
-
 
   <ons-toolbar>
     <ons-back-button>Back</ons-back-button>
@@ -204,8 +252,15 @@ test
     </p>
 
 <ons-bottom-toolbar modifier = "transparent">
-<textarea style = "font-size: 25px" class="textarea textarea--transparent" rows="3" placeholder="Text Message"></textarea>
-<ons-button>Send</ons-button>
+
+ <ons-input id="message" modifier="underbar" placeholder="TEXT MESSAGE" float> 
+</ons-input>
+
+  <!--<ons-input id="username" modifier="underbar" placeholder="Username" float></ons-input>
+
+<textarea style = "font-size: 25px" class="textarea textarea--transparent" rows="3" placeholder="Text Message"></textarea>-->
+
+<ons-button onClick = "saveMessage();">Send</ons-button>
 </ons-bottom-toolbar>
 
 </ons-page>
